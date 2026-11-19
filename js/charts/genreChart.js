@@ -64,8 +64,17 @@ export function renderGenreChart(container, movies) {
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
   chart
+    .append("defs")
+    .append("clipPath")
+    .attr("id", "genre-plot-clip")
+    .append("rect")
+    .attr("width", innerWidth)
+    .attr("height", innerHeight);
+
+  chart
     .append("g")
     .attr("class", "grid")
+    .attr("clip-path", "url(#genre-plot-clip)")
     .call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat(() => ""));
 
   chart
@@ -89,6 +98,7 @@ export function renderGenreChart(container, movies) {
     .data(summaries)
     .join("g")
     .attr("class", "genre-group")
+    .attr("clip-path", "url(#genre-plot-clip)")
     .attr("transform", (summary) => `translate(${x(summary.genre)},0)`)
     .style("cursor", "pointer")
     .on("click", (_, summary) => {
