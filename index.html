@@ -88,7 +88,6 @@
               <p class="eyebrow">Question 1</p>
               <h2>Which genres return the most?</h2>
             </div>
-            <span class="chart-status">Coming next</span>
           </div>
           <div id="genre-chart" class="chart-placeholder" aria-live="polite">
             Genre distribution chart will appear here.
@@ -101,7 +100,6 @@
               <p class="eyebrow">Question 2</p>
               <h2>When should a movie launch?</h2>
             </div>
-            <span class="chart-status">Coming next</span>
           </div>
           <div id="release-chart" class="chart-placeholder" aria-live="polite">
             Release timing chart will appear here.
@@ -114,7 +112,6 @@
               <p class="eyebrow">Question 3</p>
               <h2>Which creative partners perform?</h2>
             </div>
-            <span class="chart-status">Coming next</span>
           </div>
           <div id="people-chart" class="chart-placeholder" aria-live="polite">
             Director and cast analysis will appear here.
@@ -125,10 +122,46 @@
       <section class="panel methodology-panel">
         <p class="eyebrow">Methodology</p>
         <h2>How to read this dashboard</h2>
-        <p>
-          ROI is calculated as worldwide revenue divided by budget. Movies with
-          missing budget or revenue values are excluded from ROI views. Dollar
-          values are nominal and revenue represents box office revenue only.
+        <div class="reading-guide">
+          <article>
+            <h3>Question 1 · Which genres return the most?</h3>
+            <p>
+              Each genre is shown as a box plot on a logarithmic ROI scale. The
+              pale blue box spans the middle half of films, the dark line marks
+              the median, and the whiskers show the observed range. Blue dots
+              represent individual films; a point higher on the chart means a
+              larger return. Click a genre or its label to apply that genre as
+              a filter.
+            </p>
+          </article>
+          <article>
+            <h3>Question 2 · When should a movie launch?</h3>
+            <p>
+              This heatmap groups films by release month and decade. Each cell's
+              blue intensity represents median ROI: darker blue means a higher
+              median return, while light gray indicates that no qualifying films
+              are available. The number in a cell is the film count. Read the
+              months on the vertical axis and the full decades along the bottom;
+              hover a cell for its detailed summary.
+            </p>
+          </article>
+          <article>
+            <h3>Question 3 · Which creative partners perform?</h3>
+            <p>
+              Directors are ranked by median ROI, with names on the left and ROI
+              on a logarithmic horizontal axis. Dot size indicates the number of
+              films, and the red-to-yellow-to-green color scale represents the
+              share of profitable films. The dashed vertical line marks
+              break-even at 1× ROI. Click a director to inspect their films and
+              frequent cast collaborators.
+            </p>
+          </article>
+        </div>
+        <p class="methodology-note">
+          All three views respond to the genre, budget tier, release season, and
+          minimum-votes filters above. ROI is worldwide revenue divided by
+          budget; movies missing either value are excluded, and revenue is
+          nominal box office revenue.
         </p>
         <p id="data-status" class="data-status" aria-live="polite">
           Waiting for the prepared dataset.
