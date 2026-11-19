@@ -39,16 +39,23 @@ export function renderGenreChart(container, movies) {
 
   const summaries = summarizeGenres(movies);
   const width = Math.max(container.getBoundingClientRect().width, 620);
-  const height = 410;
+  const minRoi = d3.min(summaries, (summary) => summary.min);
+  const maxRoi = Math.max(4, d3.max(summaries, (summary) => summary.max));
+  const roiSpan = Math.log10(maxRoi / minRoi);
+  const height = Math.min(720, Math.max(410, 360 + roiSpan * 90));
   const margin = { top: 20, right: 20, bottom: 92, left: 58 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
-  const maxRoi = Math.max(4, d3.max(summaries, (summary) => summary.max));
+  const plotSvgHeight = height - margin.bottom;
 
   const svg = d3
     .select(container)
+    .append("div")
+    .attr("class", "genre-plot-scroll")
     .append("svg")
-    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("viewBox", `0 0 ${width} ${plotSvgHeight}`)
+    .attr("height", plotSvgHeight)
+    .style("height", `${plotSvgHeight}px`)
     .attr("class", "genre-chart-svg")
     .attr("role", "img")
     .attr("aria-label", "Return on investment distributions by movie genre");
@@ -58,7 +65,7 @@ export function renderGenreChart(container, movies) {
     .domain(summaries.map((summary) => summary.genre))
     .range([0, innerWidth])
     .padding(0.25);
-  const y = d3.scaleLog().domain([0.25, maxRoi]).range([innerHeight, 0]).nice();
+  const y = d3.scaleLog().domain([minRoi, maxRoi]).range([innerHeight, 0]).nice();
 
   const chart = svg
     .append("g")
@@ -165,33 +172,7 @@ export function renderGenreChart(container, movies) {
     .append("title")
     .text((entry) => `${entry.movie.title}: ${entry.movie.roi.toFixed(1)}× ROI`);
 
-  chart
-    .append("g")
-    .attr("transform", `translate(0,${innerHeight})`)
-    .call(d3.axisBottom(x))
-    .selectAll("text")
-    .attr("transform", "rotate(-38)")
-    .style("text-anchor", "end");
-
-  const yAxis = chart
-    .append("g")
-    .attr("class", "y-axis")
-    .call(d3.axisLeft(y).ticks(6, "~g"));
-
-  const zoom = d3
-    .zoom()
-    .scaleExtent([1, 8])
-    .on("zoom", (event) => {
-      const scale = event.transform.k;
-      const minTranslateY = innerHeight * (1 - scale);
-      const translateY = Math.max(minTranslateY, Math.min(0, event.transform.y));
-      const plotTransform = d3.zoomIdentity.translate(0, translateY).scale(scale);
-
-      plotLayer.attr("transform", plotTransform);
-      yAxis.call(d3.axisLeft(plotTransform.rescaleY(y)).ticks(6, "~g"));
-    });
-
-  svg.call(zoom);
+  chart.append("g").call(d3.axisLeft(y).ticks(6, "~g"));
 
   svg
     .append("text")
@@ -207,5 +188,21 @@ export function renderGenreChart(container, movies) {
     .attr("class", "chart-caption")
     .attr("x", margin.left)
     .attr("y", 16)
-    .text("Scroll to zoom Â· drag to pan vertically");
+    .text("Scroll vertically to inspect the full plot, from highest to lowest ROI");
+
+  const xAxisSvg = d3
+    .select(container)
+    .append("svg")
+    .attr("class", "genre-x-axis")
+    .attr("viewBox", `0 0 ${width} ${margin.bottom}`)
+    .attr("height", margin.bottom)
+    .attr("role", "presentation");
+
+  xAxisSvg
+    .append("g")
+    .attr("transform", `translate(${margin.left},8)`)
+    .call(d3.axisBottom(x))
+    .selectAll("text")
+    .attr("transform", "rotate(-38)")
+    .style("text-anchor", "end");
 }

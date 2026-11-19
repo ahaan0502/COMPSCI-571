@@ -76,8 +76,15 @@ select { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-
 .chart-placeholder .median-line { stroke: #172033; stroke-width: 2.5; }
 .chart-placeholder .movie-point { fill: #3157d5; opacity: 0.28; }
 .chart-placeholder .movie-point:hover { opacity: 0.9; }
-.chart-placeholder .genre-chart-svg { cursor: grab; touch-action: none; }
-.chart-placeholder .genre-chart-svg:active { cursor: grabbing; }
+.chart-placeholder:has(.genre-chart-svg) { overflow: hidden; }
+.genre-plot-scroll {
+  max-height: 480px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 72px;
+  scrollbar-gutter: stable;
+}
+.genre-x-axis { display: block; width: 100%; min-width: 620px; height: 92px; overflow: visible; }
 .chart-placeholder .break-even-line { stroke: #e08c3a; stroke-dasharray: 5 4; }
 .chart-placeholder .break-even-label, .chart-placeholder .axis-label { fill: #647089; font-size: 11px; }
 .chart-placeholder .release-cell { stroke: #fff; stroke-width: 1px; }
