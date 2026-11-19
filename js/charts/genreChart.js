@@ -49,6 +49,7 @@ export function renderGenreChart(container, movies) {
     .select(container)
     .append("svg")
     .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("class", "genre-chart-svg")
     .attr("role", "img")
     .attr("aria-label", "Return on investment distributions by movie genre");
 
@@ -71,13 +72,17 @@ export function renderGenreChart(container, movies) {
     .attr("width", innerWidth)
     .attr("height", innerHeight);
 
-  chart
+  const plotLayer = chart
+    .append("g")
+    .attr("class", "genre-plot-layer")
+    .attr("clip-path", "url(#genre-plot-clip)");
+
+  plotLayer
     .append("g")
     .attr("class", "grid")
-    .attr("clip-path", "url(#genre-plot-clip)")
     .call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat(() => ""));
 
-  chart
+  plotLayer
     .append("line")
     .attr("class", "break-even-line")
     .attr("x1", 0)
@@ -93,7 +98,7 @@ export function renderGenreChart(container, movies) {
     .attr("text-anchor", "end")
     .text("Break-even");
 
-  const groups = chart
+  const groups = plotLayer
     .selectAll(".genre-group")
     .data(summaries)
     .join("g")
@@ -168,7 +173,25 @@ export function renderGenreChart(container, movies) {
     .attr("transform", "rotate(-38)")
     .style("text-anchor", "end");
 
-  chart.append("g").call(d3.axisLeft(y).ticks(6, "~g"));
+  const yAxis = chart
+    .append("g")
+    .attr("class", "y-axis")
+    .call(d3.axisLeft(y).ticks(6, "~g"));
+
+  const zoom = d3
+    .zoom()
+    .scaleExtent([1, 8])
+    .on("zoom", (event) => {
+      const scale = event.transform.k;
+      const minTranslateY = innerHeight * (1 - scale);
+      const translateY = Math.max(minTranslateY, Math.min(0, event.transform.y));
+      const plotTransform = d3.zoomIdentity.translate(0, translateY).scale(scale);
+
+      plotLayer.attr("transform", plotTransform);
+      yAxis.call(d3.axisLeft(plotTransform.rescaleY(y)).ticks(6, "~g"));
+    });
+
+  svg.call(zoom);
 
   svg
     .append("text")
@@ -178,4 +201,11 @@ export function renderGenreChart(container, movies) {
     .attr("y", 16)
     .attr("text-anchor", "middle")
     .text("ROI (log scale)");
+
+  svg
+    .append("text")
+    .attr("class", "chart-caption")
+    .attr("x", margin.left)
+    .attr("y", 16)
+    .text("Scroll to zoom Â· drag to pan vertically");
 }
