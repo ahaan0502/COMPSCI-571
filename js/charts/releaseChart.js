@@ -85,7 +85,7 @@ export function renderReleaseChart(container, movies) {
     .append("g")
     .attr("transform", `translate(0,${innerHeight})`)
     .call(
-      d3.axisBottom(x).tickFormat((decade) => `${String(decade).slice(0, 2)}0s`)
+      d3.axisBottom(x).tickFormat((decade) => `${decade}s`)
     );
   chart
     .append("g")
